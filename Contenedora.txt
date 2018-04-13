@@ -1,0 +1,232 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.Timer;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import com.panamahitek.PanamaHitek_Arduino;
+
+public class Contenedora extends JPanel {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JFrame frameTemp = new JFrame(); 									// INSTANCIAR CLASE JFRAME
+	private JLabel labelTitulo; 												// DECLARAR OBJETO DE TIPO JLABEL
+	private Image imagen; 														// DECLARAR OBJETO IMAGE
+	private JButton btnTemp, btnHora, btnMensajes; 								// DECLARAR BOTONES
+	private JComboBox<String> puertos; 											// DECLARAR JCOMBOBOX
+	private Timer timer; 														// DECLARAR TIMER
+	private Font font = new Font("Franklin Gothic Demi Cond", Font.PLAIN, 30); 	// DECLARAR FONT
+	private String[] puertosNombres = {"COM1", "COM2", "COM3", 
+									"COM4", "COM5", "COM6", "COM7", 
+									"COM8", "COM9", "COM10"}; 					// INSTANCIAR ARREGLO CON PUERTOS COM
+	private PanamaHitek_Arduino arduino = new PanamaHitek_Arduino(); 			// INSTANCIAR OBJETO PANAMA_HITEK
+	private Temperatura temp = new Temperatura(arduino); 						// INSTANCIAR CLASE DE LA TEMPERATURA
+	private Manejadora manejadora = new Manejadora();							// INSTANCIAR CLASE MANEJADORA
+	
+	public Contenedora() {
+		setLayout(new BorderLayout()); 			// ESTABLECER LAYOUT
+		setImagen("img/schwarz.jpg"); 			// ESTABLECER IMAGEN DE FONDO
+		
+		add(getNorte(), BorderLayout.NORTH); 	// AGREGAR PANEL EN EL NORTE
+		add(getCentro(), BorderLayout.CENTER); 	// AGREGAR PANEL EN EL CENTRO
+		add(getSur(), BorderLayout.SOUTH); 		// AGREGAR PANEL EN EL SUR
+		
+		realizarConexionArduino(); 				// REALIZAR CONEXIÓN CON ARDUINO
+	}
+	
+	private JPanel getNorte() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 	// INSTANCIAR JPANEL Y ESTABLECER SU LAYOUT
+		labelTitulo = new JLabel("Elija una opción..."); 				// INSTANCIAR JLABEL
+		
+		panel.setOpaque(false); 										// QUITAR OPACIDAD EN PANEL
+		panel.setBorder(new EmptyBorder(40, 0, 0, 0)); 					// ESTABLECER BORDER
+		labelTitulo.setFont(font); 										// ESTABLECER FUENTE
+		labelTitulo.setForeground(Color.WHITE); 						// ESTABLECER COLOR DE TEXTO
+		
+		panel.add(labelTitulo); 										// AGREGAR LABEL AL PANEL
+		return panel; 													// RETORNAR OBJETO JPANEL
+	}
+	
+	/*MÉTODO QUE RETORNA PANEL QUE CONTIENE BOTONES PARA ELEGIR OPCIÓN DE MOSTRAR ALGO EN PANTALLA LCD*/
+	private JPanel getCentro() {
+		JPanel panel = new JPanel(new GridLayout(1, 3, 15, 0)); 										// INSTANCIAR JPANEL Y ESTABLECER LAYOUT
+		btnTemp = new JButton("Temperatura", new ImageIcon(getClass().getResource("img/temp13.png"))); 	// INSTANCIAR BOTÓN
+		btnHora = new JButton("Hora", new ImageIcon(getClass().getResource("img/hour32.png"))); 		// INSTANCIAR BOTÓN
+		btnMensajes = new JButton("Mensajes", new ImageIcon(getClass().getResource("img/mess72.png"))); // INSTANCIAR BOTÓN
+		
+		panel.setOpaque(false); 																		// QUITAR OPACIDAD DEL PANEL
+		panel.setBorder(new EmptyBorder(110, 100, 120, 100)); 											// ESTABLECER BORDER
+		btnTemp.setOpaque(false); 																		// QUITAR OPACIDAD EN BOTÓN
+		btnTemp.setContentAreaFilled(false); 															// QUITAR FONDO
+		btnTemp.setForeground(Color.WHITE); 															// ESTABLECER COLOR DEL TEXTO A BLANCO
+		btnTemp.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 								// ESTABLECER TIPO DE CURSOR
+		btnTemp.setHorizontalTextPosition(SwingConstants.CENTER); 										// ESTABLECER POSICIÓN HORIZONTAL DEL TEXTO
+		btnTemp.setVerticalTextPosition(SwingConstants.BOTTOM); 										// ESTABLECER POSICIÓN VERTICAL DEL TEXTO
+		btnTemp.addActionListener(manejadora); 															// AGREGAR EVENTO AL BOTÓN
+		btnHora.setOpaque(false); 																		// QUITAR OPACIDAD DEL PANEL
+		btnHora.setContentAreaFilled(false); 															// ESTABLECER BORDER
+		btnHora.setForeground(Color.WHITE); 															// ESTABLECER COLOR DEL TEXTO A BLANCO
+		btnHora.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 								// ESTABLECER TIPO DE CURSOR
+		btnHora.setHorizontalTextPosition(SwingConstants.CENTER); 										// ESTABLECER POSICIÓN HORIZONTAL DEL TEXTO
+		btnHora.setVerticalTextPosition(SwingConstants.BOTTOM); 										// ESTABLECER POSICIÓN VERTICAL DEL TEXTO
+		btnHora.addActionListener(manejadora); 															// AGREGAR EVENTO AL BOTÓN
+		btnMensajes.setOpaque(false); 																	// QUITAR OPACIDAD DEL PANEL
+		btnMensajes.setContentAreaFilled(false); 														// ESTABLECER BORDER
+		btnMensajes.setForeground(Color.WHITE); 														// ESTABLECER COLOR DEL TEXTO A BLANCO
+		btnMensajes.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); 							// ESTABLECER TIPO DE CURSOR
+		btnMensajes.setHorizontalTextPosition(SwingConstants.CENTER); 									// ESTABLECER POSICIÓN HORIZONTAL DEL TEXTO
+		btnMensajes.setVerticalTextPosition(SwingConstants.BOTTOM); 									// ESTABLECER POSICIÓN VERTICAL DEL TEXTO
+		btnMensajes.addActionListener(manejadora); 														// AGREGAR EVENTO AL BOTÓN
+		
+		panel.add(btnTemp); 																			// AGREGAR BOTÓN
+		panel.add(btnHora); 																			// AGREGAR BOTÓN
+		panel.add(btnMensajes); 																		// AGREGAR BOTÓN
+		return panel; 																					// RETORNAR PANEL
+	}
+	
+	/*MÉTODO QUE RETORNA EL PANEL CON EL COMBOBOX PARA ELEGIR PUERTO COM*/
+	private JPanel getSur() {
+		JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER)); 				// INSTANCIAR CLASE JPANEL
+		JLabel labelPuerto = new JLabel("Elija puerto"); 							// INSTANCIAR JLABEL
+		puertos = new JComboBox<String>(puertosNombres); 							// INSTANCIAR JCOMBOBOX
+		
+		panel.setOpaque(false); 													// QUITAR OPACIDAD DEL PANEL
+		puertos.setSelectedIndex(3); 												// ESTABLECER ÍNDICE SELECCIONADO
+		labelPuerto.setFont(new Font("Franklin Gothic Demi Cond", Font.PLAIN, 20)); // ESTABLECER FUENTE
+		labelPuerto.setForeground(Color.WHITE); 									// ESTABLECER COLOR DE TEXTO A BLANCO
+		
+		panel.add(labelPuerto); 													// AGREGAR JLABEL
+		panel.add(puertos); 														// AGREGAR JCOMBOBOX AL PANEL
+		return panel; 																// RETORNAR PANEL
+	}
+	
+	/*MÉTODO QUE REALIZA LA CONEXIÓN CON ARDUINO*/
+	@SuppressWarnings("deprecation")
+	private void realizarConexionArduino() {
+		try {
+			arduino.ArduinoRXTX(puertos.getItemAt(puertos.getSelectedIndex()), 2000, 9600, temp); 	// REALIZAR CONEXIÓN CON ARDUINO Y REGISTRAR EVENTO 'TEMP'
+		} catch (Exception e) {
+			System.out.println(e.getMessage()); 													// MOSTRAR MENSAJE DE ERROR
+		}
+	}
+	
+	/*MÉTODO QUE ESTABLECE IMAGEN DE FONDO EN LA VENTANA. RECIBE COMO PARÁMETRO LA RUTA DE LA IMAGEN*/
+	private void setImagen(String nombreImagen) {
+		if (nombreImagen != null) { 													// SI EL OBJETO NO SE HA INSTANCIADO
+			imagen = new ImageIcon(getClass().getResource(nombreImagen)).getImage();	// INSTANCIAR OBJETO
+		} else { 																		// SI YA FUE INSTANCIADO
+			imagen = null; 																// HACER EL OBJETO NULO
+		}
+		repaint(); 																		// REPINTAR EL PANEL
+	}
+	
+	/*MÉTODO QUE PINTA EN PANEL*/
+	@Override
+	public void paint(Graphics g) {
+		if (imagen != null) { 											// SI EL OBJETO YA HA SIDO INSTANCIADO
+			g.drawImage(imagen, 0, 0, getWidth(), getHeight(), this); 	// DIBUJAR LA IMAGEN EN PANEL
+			setOpaque(false); 											// QUITAR OPACIDAD EN PANEL
+		} else { 														// SI NO HA SIDO INSTANCIADO
+			setOpaque(true); 											// PONER OPACIDAD
+		}
+		
+		super.paint(g); 												// PINTAR IMAGEN EN PANTALLA
+	}
+	
+	/*CLASE INTERNA QUE MANEJA LOS EVENTOS DE BOTONES*/
+	private class Manejadora implements ActionListener {
+
+		/*MÉTODO QUE SE LLAMA AL OCURRIR EVENTO*/
+		@Override
+		public void actionPerformed(ActionEvent ev) {			
+			if(ev.getSource() == btnTemp) 		// SI EL BOTÓN QUE LANZÓ EL EVENTO ES btnTemp
+				mostrarTemperatura(); 			// LLAMAR MÉTODO
+			
+			if(ev.getSource() == btnHora)		// SI EL BOTÓN QUE LANZÓ EL EVENTO ES btnHora
+				mostrarHora();					// LLAMAR MÉTODO
+			
+			if(ev.getSource() == btnMensajes)	// SI EL BOTÓN QUE LANZÓ EL EVENTO ES btnMensajes
+				mostrarMensajes();				// LLAMAR MÉTODO
+		}
+		
+	}
+	
+	/*MÉTODO QUE MUESTRA TEMPERATURA EN LA VENTANA*/
+	private void mostrarTemperatura() {
+		Temperatura.mostrarTemperatura = true; 									// ESTABLECER BANDERA A VERDADERO
+		
+		if(timer != null) 														// SI EL OBJETO TIMER HA SIDO INSTANCIADO
+			timer.stop(); 														// DETENERLO PARA DEJAR DE MOSTRAR LA HORA
+		
+		try {
+			frameTemp.setTitle("Temperatura"); 									// PONER TÍTULO AL FRAME
+			frameTemp.add(temp); 												// AGREGAR PANEL AL FRAME
+			frameTemp.setSize(600, 440); 										// ESTABLECER TAMAÑO DE LA VENTANA
+			frameTemp.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 		// HACER QUE LA VENTANA CIERRE TODO RECURSO AL CERRAR VENTANA
+			frameTemp.setLocationRelativeTo(this); 								// COLOCAR VENTANA AL CENTRO
+			frameTemp.setVisible(true); 										// HACER VENTANA VISIBLE
+		} catch(Exception ex) {
+			System.out.println(ex.getMessage()); 								// IMPRIMIR MENSAJE DE ERROR
+		}
+	}
+	
+	/*MÉTODO QUE MUESTRA LA HORA EN LCD*/
+	private void mostrarHora() {
+		Temperatura.mostrarTemperatura = false; 									// CAMBIAR BANDERA A FALSO
+		
+		try {
+			timer = new Timer(1000, new ActionListener() { 							// CADA SEGUNDO SE MANDARÁ HORA AL ARDUINO
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					try {
+						Date date = new Date(); 									// CREAR OBJETO TIPO DATE
+						DateFormat hourFormat = new SimpleDateFormat("HH:mm:ss"); 	// OBTENER LA HORA CON FORMATO
+						arduino.sendData(hourFormat.format(date)); 					// ENVIAR HORA AL ARDUINO
+					} catch (Exception e1) {
+						System.out.println(e1.getMessage()); 						// IMPRIMIR MENSAJE DE ERROR
+					}
+				}
+			});
+		} catch (Exception e) {
+			System.out.println(e.getMessage()); 									// IMPRIMIR MENSAJE DE ERROR
+		}
+		
+		timer.start(); 																// INICIAR CRONÓMETRO
+	}
+	
+	/*MÉTODO QUE MUESTRA MENSAJE QUE MANDA EL USUARIO*/
+	private void mostrarMensajes() {
+		Temperatura.mostrarTemperatura = false; 							// ESTABLECER BANDERA A FALSO
+		String mensaje = JOptionPane.showInputDialog("Ingrese mensaje"); 	// OBTENER EL MENSAJE DE JOPTION
+		
+		try {
+			arduino.sendData(mensaje); 										// ENVIAR MENSAJE A ARDUINO
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage()); 				// IMPRIMIR MENSAJE DE ERROR
+		} finally {
+			if(timer != null) 												// SI EL OBJETO TIMER ESTÁ INSTANCIADO
+				timer.stop(); 												// DETENERLO PARA DEJAR DE MOSTRAR LA HORA
+		}
+	}
+
+}

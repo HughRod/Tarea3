@@ -1,0 +1,17 @@
+import java.awt.BorderLayout;
+import javax.swing.JFrame;
+
+public class Test {
+
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("TAREA #3: CONEXIÓN JAVA CON ARDUINO"); // INSTANCIAR CLASE JFRAME
+		
+		frame.setLayout(new BorderLayout()); 							// ESTABLECER LAYOUT 
+		frame.setSize(700, 500); 										// ESTABLECER TAMAÑO DE LA VENTANA
+		frame.setLocationRelativeTo(null); 								// ESTABLECER VENTANA AL CENTRO DE LA PANTALLA
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 			// TERMINAR PROGRAMA AL CERRAR VENTANA
+		frame.add(new Contenedora()); 									// AGREGAR PANEL AL JFRAME
+		frame.setVisible(true); 										// HACER VENTANA VISIBLE
+	}
+
+}
