@@ -1,3 +1,11 @@
+/*
+Programa que hace que se muestre la temperatura en el
+ambiente, la hora actual y un mensaje personalisado
+por el usuario desde Java.
+
+Autor: Hugo Rodrigo Murillo Martínez
+*/
+
 #include <LiquidCrystal.h>  // INCLUIR BIBLIOTECA PARA MANDAR TEXTO A LCD
 
 // VARIABLES PARA TEMPERATURA
